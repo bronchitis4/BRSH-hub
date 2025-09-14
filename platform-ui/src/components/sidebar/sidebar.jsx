@@ -14,10 +14,10 @@ const Sidebar = () => {
         </div>
       }
       {isOpen &&
-        <div className="absolute w-full md:static md:w-full h-screen bg-white shadow-lg select-none">
+        <div className="absolute z-10 w-full md:static md:w-full h-screen bg-white shadow-lg select-none">
           <div className="w-full h-[60px] bg-blue-600 border-b border-black flex items-center px-3">
             <UserBlock />
-            <CloseCross className="w-10 h-10 cursor-pointer none md:hidden" onClick={() => setIsOpen(false)}/>
+            <CloseCross className="w-10 h-10 cursor-pointer md:hidden" onClick={() => setIsOpen(false)}/>
           </div>
           <DropdownMenu />
         </div>}
