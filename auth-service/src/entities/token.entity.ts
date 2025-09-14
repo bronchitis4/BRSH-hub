@@ -1,22 +1,28 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, BeforeInsert, Column, CreateDateColumn, OneToOne, JoinColumn } from 'typeorm';
 import { Users } from './users.entity';
 
 @Entity("user_tokens")
 export class UserToken {
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column()
-  token: string;
+    @Column()
+    token: string;
 
-  @CreateDateColumn({ type: 'datetime' })
-  created_at: Date;
+    @CreateDateColumn({ type: 'datetime' })
+    created_at: Date;
 
-  @CreateDateColumn({ type: 'datetime' })
-  expire_at: Date;
+    @Column({ type: 'datetime' })
+    expire_in: Date;
 
-  @CreateDateColumn()
-  @OneToOne(() => Users, user => user.id, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'user_id' })
-  user_id: Users;
+    @BeforeInsert()
+    setExpireIn() {
+        const now = new Date();
+        this.expire_in = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+    }
+
+    @OneToOne(() => Users, { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'user_id' })
+    user: Users;
+
 }
