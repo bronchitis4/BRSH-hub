@@ -1,30 +1,35 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '../users/users.service';
 import { UserToken } from '../entities/token.entity';
-import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private jwtService: JwtService,
-    @InjectRepository(UserToken)
-    private userTokenRepo: Repository<UserToken>,
-  ) {}
+    constructor(
+        private jwtService: JwtService,
+        @InjectRepository(UserToken)
+        private userTokenRepo: Repository<UserToken>,
+    ) { }
 
+    async createToken(user: any) {
+        const payload = { email: user.email, user_id: user.id };
+        const access_token = this.jwtService.sign(payload, { expiresIn: '1h' });
+        const refresh_token = this.jwtService.sign(payload, { expiresIn: '30d' });
 
-  async createToken(user: any) {
-    const payload = { email: user.email, user_id: user.id };
-    const access_token = this.jwtService.sign(payload);
+        let userToken = await this.userTokenRepo.findOne({ where: { user: { id: user.id } } });
+        if (userToken) {
+            userToken.token = refresh_token;
+            await this.userTokenRepo.save(userToken);
+        } else {
+            userToken = this.userTokenRepo.create({
+                token: refresh_token,
+                user: user,
+            });
+            await this.userTokenRepo.save(userToken);
+        }
 
-    const userToken = await this.userTokenRepo.create({
-        token: access_token,
-        user_id: user.id
-    })
-    await this.userTokenRepo.save(userToken);
-    
-    return { access_token };
-  }
+        return { access_token, refresh_token };
+    }
+
 }

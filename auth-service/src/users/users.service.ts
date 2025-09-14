@@ -15,6 +15,8 @@ export class UsersService {
 
         @InjectRepository(UserToken)
         private readonly tokenRepo: Repository<UserToken>,
+        
+        private readonly authService: AuthService,
     ) { }
 
     async CreateNewUser(body: any) {
@@ -41,8 +43,9 @@ export class UsersService {
                 })
                 await this.userRepo.save(newUser);
 
+                const token = await this.authService.createToken(newUser)
                 return ({
-                    data: newUser,
+                    data: {...newUser, token},
                     statusCode: 200,
                     message: "Запис створено!",
                     isSuccessful: true
