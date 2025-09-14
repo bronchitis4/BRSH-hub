@@ -14,15 +14,15 @@ const DropdownMenu = () => {
             value: "Category 2"
         }])
 
-    return (<div className="text-left p-8 md:text-center md:p-0">
-        <div onClick={() => setIsOpen(state => !state)} className="text-black w-full font-medium text-[30px] hover:bg-amber-50 cursor-pointer">
+    return (<div className="text-left md:text-center md:p-0">
+        <div onClick={() => setIsOpen(state => !state)} className="text-black w-full pl-4 md:pl-0 font-medium text-[30px] hover:bg-amber-50 cursor-pointer">
             Категорії
         </div>
 
         {!isOpen || 
-        <ul className="text-black pl-5 text-[20px]">
+        <ul className="text-black text-[20px]">
             {categoriesList.map(item => {
-                return <li className="hover:underline cursor-pointer" onClick={() => setCurrentCategory(item.value)}>{item.name}</li>
+                return <li className="pl-4 md:pl-0 shadow-lg p-2 hover:underline cursor-pointer" onClick={() => setCurrentCategory(item.value)}>{item.name}</li>
             })}
         </ul>}
     </div>)
